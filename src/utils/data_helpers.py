@@ -44,7 +44,7 @@ def load_data_and_labels(positive_data_file, negative_data_file):
     y = np.concatenate([positive_labels, negative_labels], 0)
     return [x_text, y]
 
-def load_data_and_labels_multi_class(train_data_file, test_data_file):
+def load_data_and_labels_multi_class(train_data_file, test_data_file, verbose=False):
 
     # Loda data from files
     train_examples = list(open(train_data_file, "r").readlines())
@@ -60,21 +60,21 @@ def load_data_and_labels_multi_class(train_data_file, test_data_file):
     x_test_text  = [clean_str(sent) for sent in test_text]
 
     # Generate labels
-    labels = list(set([label for labels in train_labels_text for label in labels]))
-    labels.sort()
-    print labels
-    print len(labels)
-
     train_labels_count = {}
     for labels_text in train_labels_text:
         for label in labels_text:
             train_labels_count[label] = train_labels_count.get(label, 0) + 1
-    test_labels_count = {}
-    for labels_text in test_labels_text:
-        for label in labels_text:
-            test_labels_count[label] = test_labels_count.get(label, 0) + 1
-    for label in labels:
-        print label, train_labels_count[label], test_labels_count.get(label, 0)
+
+    labels = list(set([label for labels in train_labels_text for label in labels]))
+    labels.sort(key=lambda x:train_labels_count[x], reverse=True)
+
+    if verbose:
+        test_labels_count = {}
+        for labels_text in test_labels_text:
+            for label in labels_text:
+                test_labels_count[label] = test_labels_count.get(label, 0) + 1
+        for label in labels:
+            print label, train_labels_count[label], test_labels_count.get(label, 0)
 
     y_train = [ [1 if label in labels_text else 0 for label in labels] for labels_text in train_labels_text]
     y_test = [ [1 if label in labels_text else 0 for label in labels] for labels_text in test_labels_text]
