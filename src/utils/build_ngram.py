@@ -1,7 +1,12 @@
 import os, sys
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-g', '--genre', help="laptop | restaurants", required=True)
+args = parser.parse_args()
 
 input_path = '../../data/reviews/'
-genre = 'restaurant'
+genre = args.genre
 
 fn_train = os.path.join(input_path, 'review_16_{0}.train'.format(genre))
 

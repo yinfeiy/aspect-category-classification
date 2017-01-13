@@ -73,26 +73,27 @@ class TextCNN(object):
             l2_loss += tf.nn.l2_loss(W)
             l2_loss += tf.nn.l2_loss(b)
             self.scores = tf.nn.xw_plus_b(self.h_drop, W, b, name="scores")
-            self.predictions = tf.argmax(self.scores, 1, name="predictions")
+            # self.predictions = tf.argmax(self.scores, 1, name="predictions")
+            threshold = tf.Variable(tf.constant(0.2))
+            self.predictions = tf.cast(tf.greater_equal(self.scores, threshold), "float")
 
         # CalculateMean cross-entropy loss
         with tf.name_scope("loss"):
-            losses = tf.nn.softmax_cross_entropy_with_logits(self.scores, self.input_y)
+            #losses = tf.nn.softmax_cross_entropy_with_logits(self.scores, self.input_y)
+            losses = tf.nn.sigmoid_cross_entropy_with_logits(self.scores, self.input_y)
             self.loss = tf.reduce_mean(losses) + l2_reg_lambda * l2_loss
 
         # Accuracy
         with tf.name_scope("accuracy"):
-            correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
-            self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
+            #correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
+            correct_predictions = tf.cast(tf.equal(self.predictions, self.input_y), "float")
+            self.accuracy = tf.reduce_mean(correct_predictions, name="accuracy")
 
-            true_positives = tf.cast( tf.logical_and(correct_predictions, tf.equal(tf.argmax(self.input_y,1), 1)), "float")
-            det_positives = tf.cast( tf.equal(self.predictions, 1), "float")
-            all_positives = tf.cast( tf.equal(tf.argmax(self.input_y, 1), 1), "float")
-
-            self.precision = tf.divide(tf.reduce_sum(true_positives), tf.reduce_sum(det_positives), name="precision")
-            self.recall = tf.divide(tf.reduce_sum(true_positives), tf.reduce_sum(all_positives), name="recall")
+            true_positives = tf.cast( tf.logical_and(tf.equal(correct_predictions, 1), tf.equal(self.input_y, 1)), "float")
+            self.precision = tf.divide(tf.reduce_sum(true_positives), tf.reduce_sum(self.predictions), name="precision")
+            self.recall = tf.divide(tf.reduce_sum(true_positives), tf.reduce_sum(self.input_y), name="recall")
 
             self.tp = tf.reduce_sum(true_positives, name='tp')
-            self.ap = tf.reduce_sum(all_positives, name='ap')
-            self.dp = tf.reduce_sum(det_positives, name='dp')
+            self.ay = tf.reduce_sum(self.input_y, name='ay')
+            self.ap = tf.reduce_sum(self.predictions, name='ap')
 

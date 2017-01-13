@@ -45,7 +45,7 @@ x_dev_bigram = build_bigram_feature(x_dev_text)
 print ('Building n-gram features done...\n')
 
 print ('Build word2vec feature...')
-word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants.bin'
+word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants-w.bin'
 x_train_w2v = build_word2vec_feature(x_train_text, word2vec_model)
 x_dev_w2v = build_word2vec_feature(x_dev_text, word2vec_model)
 print ('Build word2vec feature done...\n')
