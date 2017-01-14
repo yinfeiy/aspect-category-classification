@@ -5,9 +5,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-g', '--genre', help="laptop | restaurants", required=True)
 args = parser.parse_args()
 
-input_path = '../../data/reviews/'
 genre = args.genre
 
+input_path = '../../data/reviews/'
 fn_train = os.path.join(input_path, 'review_16_{0}.train'.format(genre))
 
 # unigram
