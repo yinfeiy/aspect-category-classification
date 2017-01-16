@@ -23,12 +23,14 @@ parser.add_argument('-g', '--genre', help="laptop | restaurant", required=True)
 parser.add_argument('-p', '--pr_curve', default=False, help="plot precision-recall curve",  action='store_true')
 parser.add_argument('-m', '--model_path', help="trained model path", required=True)
 parser.add_argument('-l', '--label', help="evaluated label", required=True)
+parser.add_argument('-o', '--output', default='', help="store the results")
 args = parser.parse_args()
 
 genre = args.genre
 plot_pr_curve = args.pr_curve
 model_path = args.model_path
 label = args.label
+output = args.output
 
 if plot_pr_curve:
     import matplotlib.pyplot as plt
@@ -39,9 +41,9 @@ unigram_dict_file = os.path.join(project_path, "dict/{0}.unigram".format(genre))
 bigram_dict_file = os.path.join(project_path, "dict/{0}.bigram".format(genre))
 
 if genre == 'laptop':
-    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-electronics-w.bin'
+    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-electronics.bin'
 elif genre == 'restaurant':
-    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants-w.bin'
+    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants.bin'
 else:
     print 'Error, only support laptop or restaurant'
     sys.exit(1)
@@ -51,7 +53,6 @@ print ('Loading Data...')
 x_train_text, y_train, x_dev_text, y_dev, labels = data_helpers.load_data_and_labels_multi_class(train_data_file, test_data_file, verbose=False)
 print ('Loading Data Done.\n')
 
-print labels
 # one v.s. all training for each label
 if label not in labels:
     print ('{0} is not supported'.format(label))
@@ -83,7 +84,11 @@ print ('Number of positive samples {0}/{1}'.format(sum(y_train_single), len(y_tr
 
 # Building model
 print ('Loading models...')
-clf = joblib.load(os.path.join(model_path, label, '{0}.pkl'.format(label)))
+try:
+    clf = joblib.load(os.path.join(model_path, label, '{0}.pkl'.format(label)))
+except:
+    print ('Loading model failed, quite')
+    sys.exit(1)
 print ('Loading models done...\n')
 
 print ('Scoreing...')
@@ -118,4 +123,13 @@ if plot_pr_curve:
     plt.xlim([0.0, 1.0])
     plt.title('{0}'.format(label), fontsize=16)
     plt.legend(loc="lower left", fontsize=20)
-    plt.show()
+    if output:
+        output_label = os.path.join(output, label)
+        if not os.path.exists(output_label):
+            os.makedirs(output_label)
+        ofn = os.path.join(output_label, 'pr_curve.png')
+        print ('Storing pr curve: {0}'.format(ofn))
+        plt.savefig(ofn)
+    else:
+        plt.show()
+

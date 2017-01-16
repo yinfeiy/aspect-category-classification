@@ -39,7 +39,7 @@ bigram_dict_file = os.path.join(project_path, "dict/{0}.bigram".format(genre))
 if genre == 'laptop':
     word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-electronics-w.bin'
 elif genre == 'restaurant':
-    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants-w.bin'
+    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants.bin'
 else:
     print 'Error, only support laptop or restaurant'
     sys.exit(1)
