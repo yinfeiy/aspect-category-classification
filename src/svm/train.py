@@ -19,7 +19,7 @@ import shutil, os
 project_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-g', '--genre', default='laptop', help="laptop | restaurant")
+parser.add_argument('-g', '--genre', default='laptop', help="laptop | restaurants")
 parser.add_argument('-p', '--pr_curve', default=False, help="plot precision-recall curve",  action='store_true')
 parser.add_argument('-o', '--output_path', default='', help="save trained model")
 args = parser.parse_args()
@@ -38,10 +38,10 @@ bigram_dict_file = os.path.join(project_path, "dict/{0}.bigram".format(genre))
 
 if genre == 'laptop':
     word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-electronics-w.bin'
-elif genre == 'restaurant':
+elif genre == 'restaurants':
     word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants.bin'
 else:
-    print 'Error, only support laptop or restaurant'
+    print 'Error, only support laptop or restaurants'
     sys.exit(1)
 
 # Load data

@@ -15,8 +15,8 @@ from tensorflow.contrib.tensorboard.plugins import projector
 # Data loading params
 #tf.flags.DEFINE_string("train_data_file", "../data/reviews/review_16_laptop.train", "Data source for the positive data.")
 #tf.flags.DEFINE_string("test_data_file", "../data/reviews/review_16_laptop.test", "Data source for the positive data.")
-tf.flags.DEFINE_string("train_data_file", "../../data/reviews/review_16_restaurant.train", "Data source for the positive data.")
-tf.flags.DEFINE_string("test_data_file", "../../data/reviews/review_16_restaurant.test", "Data source for the positive data.")
+tf.flags.DEFINE_string("train_data_file", "../../data/reviews/review_16_restaurants.train", "Data source for the positive data.")
+tf.flags.DEFINE_string("test_data_file", "../../data/reviews/review_16_restaurants.test", "Data source for the positive data.")
 
 # Model Hyperparameters
 tf.flags.DEFINE_integer("embedding_dim", 300, "Dimensionality of character embedding (default: 300)")
