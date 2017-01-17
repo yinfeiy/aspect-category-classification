@@ -82,6 +82,46 @@ def load_data_and_labels_multi_class(train_data_file, test_data_file, verbose=Fa
     return x_train_text, y_train, x_test_text, y_test, labels
 
 
+def load_data_and_term_labels(train_data_file, test_data_file):
+    # Loda data from files
+    train_examples = list(open(train_data_file, "r").readlines())
+    train_examples = [te.strip().split('\t' ) for te in train_examples]
+    train_text, train_labels_text = [te[0].strip() for te in train_examples], [te[1:] for te in train_examples]
+
+    test_examples = list(open(test_data_file, "r").readlines())
+    test_examples = [te.strip().split('\t' ) for te in test_examples]
+    test_text, test_labels_text = [te[0].strip() for te in test_examples], [te[1:] for te in test_examples]
+
+    # Split by words
+    x_train_text = [clean_str(sent) for sent in train_text]
+    x_test_text  = [clean_str(sent) for sent in test_text]
+
+    # Generate labels
+    y_train_labels = []
+    y_test_labels = []
+
+    labels = set()
+    for labels_text in train_labels_text:
+        labels_single = []
+        for label in labels_text:
+            label, term = label.split('|')
+            labels.add(label)
+
+            labels_single.append((label, term))
+        y_train_labels.append(labels_single)
+
+    for labels_text in test_labels_text:
+        labels_single = []
+        for label in labels_text:
+            label, term = label.split('|')
+            labels_single.append((label, term))
+        y_test_labels.append(labels_single)
+
+    labels = list(labels)
+    labels.sort()
+    return x_train_text, y_train_labels, x_test_text, y_test_labels, labels
+
+
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
     """
     Generates a batch iterator for a dataset.
@@ -103,9 +143,9 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
             yield shuffled_data[start_index:end_index]
 
 if __name__ == '__main__':
-    #train_data_file = '../data/reviews/review_16_laptop.train'
-    #test_data_file = '../data/reviews/review_16_laptop.test'
-    train_data_file = '../data/reviews/review_16_restaurant.train'
-    test_data_file = '../data/reviews/review_16_restaurant.test'
+    #train_data_file = '../../data/reviews/review_16_laptop.train'
+    #test_data_file = '../../data/reviews/review_16_laptop.test'
+    train_data_file = '../../data/reviews/review_16_restaurants_with_term.train'
+    test_data_file = '../../data/reviews/review_16_restaurants_with_term.test'
 
-    x_text_train, y_train, x_text_test, y_test, labels = load_data_and_labels_multi_class(train_data_file, test_data_file)
+    x_text_train, y_train, x_text_test, y_test, labels = load_data_and_term_labels(train_data_file, test_data_file)
