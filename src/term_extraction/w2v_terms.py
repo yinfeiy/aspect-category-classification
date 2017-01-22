@@ -7,6 +7,7 @@ import utils.data_helpers as data_helpers
 from gensim.models import Word2Vec
 import argparse
 import time
+from spacy.en import English
 
 project_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../')
 
@@ -19,7 +20,7 @@ train_data_file = os.path.join(project_path, "data/reviews/review_16_{0}_with_te
 test_data_file = os.path.join(project_path, "data/reviews/review_16_{0}_with_term.test".format(genre))
 
 if genre == 'laptop':
-    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-electronics-w.bin'
+    word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-electronics.bin'
 elif genre == 'restaurants':
     word2vec_model = '/Users/yinfei.yang/workspace/nlp/word2vec/models/vectors-reviews-restaurants.bin'
 
@@ -29,21 +30,35 @@ data_helpers.load_data_and_term_labels(train_data_file, test_data_file)
 x_text_train, y_train_labels, x_text_test, y_test_labels, labels = \
         data_helpers.load_data_and_term_labels(train_data_file, test_data_file)
 
-for text, labels in zip(x_text_train, y_train_labels):
-    words = text.split()
+en = English()
+cd = 0
+total = 0
 
-    print '#' * 50
+for text, labels in zip(x_text_test, y_test_labels):
+
+    doc = en(u'{0}'.format(text))
+    noun_chunks = [str(nc) for nc in doc.noun_chunks]
+
+    #words = text.split()
+
     for label in labels:
-        print '#' * 20
-        print 'Label: ', label
-        aspect_part_1, aspect_part_2 = label[0].lower().split('#')
-        #if aspect_part_2 == 'general':
-        aspect_name = aspect_part_1
-        print 'Aspect: ', aspect_name
+        total += 1
 
-        for word in words:
-            print word, w2v_model.similarity(aspect_name, word)
-        print '#' * 20
+        label_term = label[1]
+        flag = False
+        for nc in noun_chunks:
+            if nc.find(label_term) >=0 or label_term=='null':
+                cd +=1
+                flag=True
+                break
 
+        if not flag:
+            print '##'
+            print text
+            print noun_chunks, label
+            print '##'
+        print cd, total
+
+        #for word in words:
+        #    print word, w2v_model.similarity(aspect_name, word)
     #print w2v_model[word]
-    time.sleep(2)
